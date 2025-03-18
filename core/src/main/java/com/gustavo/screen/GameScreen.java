@@ -97,7 +97,7 @@ public class GameScreen implements Screen {
 
         float margemEsquerda = 4f;
         float x = margemEsquerda;
-        float y = 10f; // Ajuste para posicionamento correto no mundo
+        float y = 10f;
 
         for (int c = 0; c < 8; c++) { // Colunas
             for (int l = 0; l < 6; l++) { // Linhas
