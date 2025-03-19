@@ -46,12 +46,12 @@ public class TesteGame extends ApplicationAdapter {
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(8, 5);
 
-        backGrounTexture = new Texture("background.png");
-        bucketTexture = new Texture("bucket.png");
-        dropTexture = new Texture("drop.png");
+        backGrounTexture = new Texture("gameteste/background.png");
+        bucketTexture = new Texture("gameteste/bucket.png");
+        dropTexture = new Texture("gameteste/drop.png");
 
-        dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        dropSound = Gdx.audio.newSound(Gdx.files.internal("gameteste/drop.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("gameteste/music.mp3"));
 
         bucketSprite = new Sprite(bucketTexture);
         bucketSprite.setSize(1, 1);
