@@ -16,6 +16,9 @@ import lombok.Data;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * <a href="https://www.youtube.com/watch?v=AMUv8KvVt08">Exemplo do jogo</a>
+ * */
 public class GameScreen implements Screen {
 
     private final BreakoutGame game;
@@ -293,6 +296,7 @@ public class GameScreen implements Screen {
             }
         }
 
+        //TODO dependendo de onde bater no paddle, é necessário devolver para a direção que veio
         public void colisaoBolaEPaddle(){
             boolean result = paddle.getRectangle().overlaps(bola.getRectangle());
 
