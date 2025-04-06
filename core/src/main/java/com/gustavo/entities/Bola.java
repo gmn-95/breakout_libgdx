@@ -16,8 +16,8 @@ public class Bola {
     public Bola () {
         texture = new Texture("ball.png");
         sprite = new Sprite(texture);
-        sprite.setSize(.5f, .5f);
-        sprite.setPosition(9, 3);
+        sprite.setSize(.3f, .3f);
+        sprite.setPosition(1, 9.8f);
         rectangle = new Rectangle();
     }
 

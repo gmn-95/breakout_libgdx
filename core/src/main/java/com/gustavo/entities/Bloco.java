@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import lombok.Data;
+import lombok.Getter;
 
 import java.awt.*;
 
@@ -12,21 +13,21 @@ import java.awt.*;
 public class Bloco {
     private float x;
     private float y;
-    private float width;
-    private float height;
     private final Texture texture;
     private final Sprite sprite;
     private final Rectangle rectangle;
+    @Getter
+    private static final float width = 2f;
+    @Getter
+    private static final float height = .5f;
 
-    public Bloco(float height, float width, float y, float x) {
-        this.height = height;
-        this.width = width;
+    public Bloco(float y, float x) {
         this.y = y;
         this.x = x;
 
         texture = new Texture("bloco.png");
         sprite = new Sprite(texture);
-        sprite.setSize(1, .5f);
+        sprite.setSize(width, height);
         rectangle = new Rectangle(x, y, width, height);
 
 
@@ -35,7 +36,7 @@ public class Bloco {
     public Bloco() {
         texture = new Texture("bloco.png");
         sprite = new Sprite(texture);
-        sprite.setSize(1, .5f);
+        sprite.setSize(width, height);
         rectangle = new Rectangle();
     }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.gustavo.BreakoutGame;
 import com.gustavo.entities.Bloco;
@@ -21,7 +22,6 @@ public class GameScreen implements Screen {
 
     private final Bola bola;
     private final Paddle paddle;
-    private final Bloco blocoInicial;
     private final Colisao colisao;
     private final LinkedList<Bloco> blocos;
 
@@ -30,7 +30,6 @@ public class GameScreen implements Screen {
 
         bola = new Bola();
         paddle = new Paddle();
-        blocoInicial = new Bloco();
 
         blocos = new LinkedList<>();
         criaBlocos();
@@ -62,7 +61,7 @@ public class GameScreen implements Screen {
 
         game.getShapeRenderer().setAutoShapeType(true);
         game.getShapeRenderer().begin();
-        desenhaGrade();
+//        desenhaGrade();
         game.getShapeRenderer().end();
 
         game.getBatch().begin();
@@ -98,8 +97,8 @@ public class GameScreen implements Screen {
     }
 
     private void criaBlocos(){
-        float blockWidth = ((float) blocoInicial.getTexture().getWidth() / Gdx.graphics.getWidth()) * game.getViewport().getWorldWidth(); // Converte para unidades do mundo
-        float blockHeight = ((float) blocoInicial.getTexture().getHeight() / Gdx.graphics.getHeight()) * game.getViewport().getWorldHeight(); // Converte para unidades do mundo
+        float blockWidth = Bloco.getWidth();
+        float blockHeight = Bloco.getHeight();
 
         float margemEsquerda = 4f;
         float x = margemEsquerda;
@@ -107,11 +106,11 @@ public class GameScreen implements Screen {
 
         for (int c = 0; c < 8; c++) { // Colunas
             for (int l = 0; l < 6; l++) { // Linhas
-                Bloco bloco = new Bloco(blockHeight, blockWidth, y, x);
+                Bloco bloco = new Bloco(y, x);
                 blocos.add(bloco);
-                x += blockWidth; // Move para a direita
+                x += blockWidth + 0.03f; // Move para a direita
             }
-            y += blockHeight; // Move para cima
+            y += blockHeight + 0.03f; // Move para cima
             x = margemEsquerda; // Reseta a posição X
         }
 
@@ -187,10 +186,10 @@ public class GameScreen implements Screen {
         private final BreakoutGame game;
         private final Bola bola;
         private final Paddle paddle;
-        private boolean deveIrDireita = true;
-        private boolean deveIrEsquerda = false;
-        private boolean deveIrCima = true;
-        private boolean deveIrBaixo = false;
+        private boolean isIndoParaDireita = true;
+        private boolean isIndoParaEsquerda = false;
+        private boolean isIndoParaCima = false;
+        private boolean isIndoParaBaixo = true;
 
         private void mudaDirecaoBolaDeAcordoComColisao(){
             float worldWidth = game.getViewport().getWorldWidth();
@@ -199,34 +198,34 @@ public class GameScreen implements Screen {
             float y = bola.getSprite().getY();
 
             if (y >= (worldHeight - bola.getSprite().getHeight())){
-                deveIrCima = false;
-                deveIrBaixo = true;
+                isIndoParaCima = false;
+                isIndoParaBaixo = true;
             } else if (y <= 0) {
-                deveIrCima = true;
-                deveIrBaixo = false;
+                isIndoParaCima = true;
+                isIndoParaBaixo = false;
             }
 
             if (x >= (worldWidth - bola.getSprite().getWidth())){
-                deveIrDireita = false;
-                deveIrEsquerda = true;
+                isIndoParaDireita = false;
+                isIndoParaEsquerda = true;
             } else if (x <= 0) {
-                deveIrDireita = true;
-                deveIrEsquerda = false;
+                isIndoParaDireita = true;
+                isIndoParaEsquerda = false;
             }
 
-            if(deveIrCima){
+            if(isIndoParaCima){
                 bola.moveParaCima();
             }
 
-            if(deveIrBaixo){
+            if(isIndoParaBaixo){
                 bola.moveParaBaixo();
             }
 
-            if (deveIrEsquerda){
+            if (isIndoParaEsquerda){
                 bola.moveParaEsquerda();
             }
 
-            if(deveIrDireita){
+            if(isIndoParaDireita){
                 bola.moveParaDireita();
             }
 
@@ -240,10 +239,53 @@ public class GameScreen implements Screen {
                 Bloco bloco = iterator.next();
                 if (bloco == null) continue;
 
-                boolean colisao = bola.getRectangle().overlaps(bloco.getRectangle());
+                Rectangle bolaRect = bola.getSprite().getBoundingRectangle();
+                Rectangle blocoRect = bloco.getRectangle();
 
-                if (colisao) {
-                    // TODO verificar onde a bola bateu para mudar a direção dela
+                // 1 - detecta colisao
+                if(bolaRect.overlaps(blocoRect)){
+
+                    // 2 - calcular os centros:
+                    //  posicaoX + largura / 2
+                    //  posicaoY + altura / 2
+                    float bolaCentroX = bolaRect.x + bolaRect.width / 2;
+                    float bolaCentroY = bolaRect.y + bolaRect.height / 2;
+
+                    float blocoCentroX = blocoRect.x + blocoRect.width / 2;
+                    float blocoCentroY = blocoRect.y + blocoRect.height / 2;
+
+                    //3 - calcular a distancias entre os centros
+                    float dx = bolaCentroX - blocoCentroX;
+                    float dy = bolaCentroY - blocoCentroY;
+
+                    //4 - calcular a sobreposição (O quanto os dois objetos estão se sobrepondo em cada direção)
+                    //sobreposicao horizontal (largura) = soma das metades das larguras - valor absoluto da distanciaX
+                    //sobreposicao vertical (altura) = soma das metades das altura - valor absoluto da distanciaY
+                    float larguraMedia = (bolaRect.width + blocoRect.width) / 2;
+                    float alturaMedia = (bolaRect.height + blocoRect.height) / 2;
+
+                    float larguraSobreposicao = larguraMedia - Math.abs(dx);
+                    float alturaSobreposicao = alturaMedia - Math.abs(dy);
+
+                    if (larguraSobreposicao < alturaSobreposicao){
+                        // Colisão lateral
+                        if (dx > 0) {
+                            // Bateu no lado direito do bloco
+                            deveIrParaDireita();
+                        } else {
+                            // Bateu no lado esquerdo do bloco
+                            deveIrParaEsquerda();
+                        }
+                    } else {
+                        // Colisão vertical
+                        if (dy > 0) {
+                            // Bateu por cima do bloco
+                            deveIrParaCima();
+                        } else {
+                            // Bateu por baixo do bloco
+                            deveIrParaBaixo();
+                        }
+                    }
 
                     mudaDirecaoBolaDeAcordoComColisao();
                     iterator.remove(); // Remove de forma segura
@@ -251,14 +293,32 @@ public class GameScreen implements Screen {
             }
         }
 
-
         public void colisaoBolaEPaddle(){
             boolean result = paddle.getRectangle().overlaps(bola.getRectangle());
 
             if (result) {
-                deveIrCima = true;
-                deveIrBaixo = false;
+                deveIrParaCima();
             }
+        }
+
+        private void deveIrParaBaixo(){
+            isIndoParaBaixo = true;
+            isIndoParaCima = false;
+        }
+
+        private void deveIrParaCima(){
+            isIndoParaCima = true;
+            isIndoParaBaixo = false;
+        }
+
+        private void deveIrParaEsquerda(){
+            isIndoParaEsquerda = true;
+            isIndoParaDireita = false;
+        }
+
+        private void deveIrParaDireita(){
+            isIndoParaDireita = true;
+            isIndoParaEsquerda = false;
         }
 
     }
