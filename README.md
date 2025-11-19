@@ -1,5 +1,12 @@
 # BreakoutGame
 
+Jogo Breakout feito com Java 21 e a biblioteca LibGdx.
+
+Não está completo, mas tem as principais funcionalidades em relação a colisão e movimentação. Talvez eu termine (ou não).
+
+https://github.com/user-attachments/assets/90a0b7a1-da78-4561-a2f6-272020f347eb
+
+
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
 This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
