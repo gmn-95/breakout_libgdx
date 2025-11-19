@@ -84,6 +84,8 @@ public class Colisao {
                 // 2 - calcular os centros:
                 //  posicaoX + largura / 2
                 //  posicaoY + altura / 2
+                // O x e y no LibGdx representa o canto inferior esquerdo de um Sprite, Texture ou Rectangle, por isso, preciso
+                // achar o centro dos objetos
                 float bolaCentroX = bolaRect.x + bolaRect.width / 2;
                 float bolaCentroY = bolaRect.y + bolaRect.height / 2;
 
@@ -129,12 +131,35 @@ public class Colisao {
         }
     }
 
-    //TODO dependendo de onde bater no paddle, é necessário devolver para a direção que veio
+    /**
+     * No jogo original, quando a bola batia nas laterais do paddle, ela ia para a direção correspondente ao lado do paddle
+     * */
     public void colisaoBolaEPaddle(){
-        boolean result = paddle.getRectangle().overlaps(bola.getRectangle());
-//        paddle.getRectangle().
+        Rectangle bolaRect = this.bola.getRectangle();
+        boolean isColidiu = paddle.getRectangle().overlaps(bolaRect);
 
-        if (result) {
+        if (isColidiu) {
+
+            //O x e y no LibGdx representa o canto inferior esquerdo de um Sprite, Texture ou Rectangle, por isso, preciso
+            //achar o centro dos objetos
+            float posicaoBolaX = bolaRect.x + bolaRect.width / 2;
+            float posicaoPaddleX = this.paddle.getRectangle().x;
+            float larguraPaddle = this.paddle.getRectangle().width;
+
+            //distancia da bola até a ponta esquerda do paddle.
+            float distancia = posicaoBolaX - posicaoPaddleX;
+            float percentual = (distancia / larguraPaddle) * 100;
+
+            //entre 0% a 25% = Manda bola para esquerda
+            //entre 26% a 74% = Mantém curso da bola
+            //entre 75% a 100% = Manda bola para direita
+            if (percentual >= 0 && percentual <= 25) {
+                deveIrParaEsquerda();
+            } else if (percentual >= 75) {
+                deveIrParaDireita();
+            }
+
+            //sempre devolvemos a bola para cima ao colidir
             deveIrParaCima();
         }
     }
