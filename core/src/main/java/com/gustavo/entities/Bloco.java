@@ -29,8 +29,6 @@ public class Bloco {
         sprite = new Sprite(texture);
         sprite.setSize(width, height);
         rectangle = new Rectangle(x, y, width, height);
-
-
     }
 
     public Bloco() {
